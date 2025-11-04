@@ -1,0 +1,30 @@
+:root{
+  --primary-orange: #ff7a00;
+  --primary-orange-dark: #e66800;
+  --neutral-muted: #6c757d;
+}
+
+body {
+  background-color: #ffffff;
+  color: #222222;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.bg-primary-orange {
+  background-color: var(--primary-orange) !important;
+}
+
+.btn-primary-action {
+  background-color: var(--primary-orange);
+  color: #ffffff;
+  border: none;
+}
+
+.btn-primary-action:hover {
+  background-color: var(--primary-orange-dark);
+  color: #ffffff;
+}
+
+.card {
+  border-radius: 0.5rem;
+}

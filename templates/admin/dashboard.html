@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block page_title %}Admin Dashboard{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Admin Dashboard</h2>
+  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_handle_signout') }}">Signout</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-3">
+    <div class="card p-3">
+      <h5>Total Doctors</h5>
+      <p class="fs-3">0</p>
+      <a class="btn btn-primary-action" href="{{ url_for('main_blueprint.route_show_admin_doctors_list') }}">Manage Doctors</a>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3">
+      <h5>Total Patients</h5>
+      <p class="fs-3">0</p>
+      <a class="btn btn-primary-action" href="{{ url_for('main_blueprint.route_show_admin_patients_list') }}">Manage Patients</a>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3">
+      <h5>Total Appointments</h5>
+      <p class="fs-3">0</p>
+      <a class="btn btn-primary-action" href="{{ url_for('main_blueprint.route_show_admin_appointments_list') }}">View Appointments</a>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3">
+      <h5>Departments</h5>
+      <p class="fs-5">Manage specializations</p>
+      <a class="btn btn-primary-action" href="{{ url_for('main_blueprint.route_show_admin_departments') }}">Manage Departments</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

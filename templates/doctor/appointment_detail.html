@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block page_title %}Doctor - Appointment Detail{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Appointment Detail</h2>
+  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_show_doctor_appointments_list') }}">Back</a>
+</div>
+
+<div class="card p-3">
+  <p>Patient: -</p>
+  <p>Date: -</p>
+  <p>Time: -</p>
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary-action" type="button">Mark Completed</button>
+    <button class="btn btn-outline-secondary" type="button">Cancel</button>
+  </div>
+</div>
+{% endblock %}

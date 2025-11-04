@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block page_title %}Admin - Appointments{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Appointments</h2>
+  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_show_admin_dashboard') }}">Back</a>
+</div>
+
+<table class="table">
+  <thead>
+    <tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+  </tbody>
+</table>
+{% endblock %}
