@@ -1,26 +1,50 @@
 {% extends "base.html" %}
+<<<<<<< HEAD
 {% block page_title %}Doctors{% endblock %}
 {% block main_content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Doctors</h2>
   <a class="btn btn-outline-primary" href="{{ url_for('route_show_patient_dashboard') }}">Back</a>
 </div>
+=======
+{% block page_title %}Patient - Doctors{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Doctors</h2>
+  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_show_patient_dashboard') }}">Back</a>
+</div>
+
+>>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
 <form class="mb-3">
   <div class="row g-2">
     <div class="col-md-6">
       <select class="form-select" onchange="location = this.value;">
+<<<<<<< HEAD
         <option value="{{ url_for('route_show_patient_doctors_list') }}">All Specializations</option>
         {% for dept in departments %}
         <option value="{{ url_for('route_show_patient_doctors_list') }}?specialization={{ dept.id }}">{{ dept.name }}</option>
+=======
+        <option value="{{ url_for('main_blueprint.route_show_patient_doctors_list') }}">All Specializations</option>
+        {% for dept in departments %}
+        <option value="{{ url_for('main_blueprint.route_show_patient_doctors_list') }}?specialization={{ dept.id }}">{{ dept.name }}</option>
+>>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
         {% endfor %}
       </select>
     </div>
   </div>
 </form>
+<<<<<<< HEAD
 <div class="list-group">
   {% for doc in doctors %}
   <a class="list-group-item list-group-item-action" href="{{ url_for('route_show_patient_book_appointment', doctor_id=doc.id) }}">
     {{ doc.name }} - <small>{{ doc.specialization or 'General' }}</small>
+=======
+
+<div class="list-group">
+  {% for doc in doctors %}
+  <a class="list-group-item list-group-item-action" href="{{ url_for('main_blueprint.route_show_patient_book_appointment', doctor_id=doc.email) }}">
+    {{ doc.name }} - <small>{{ doc.specialization_name }}</small>
+>>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
   </a>
   {% endfor %}
   {% if doctors|length == 0 %}

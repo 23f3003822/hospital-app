@@ -2,18 +2,29 @@
   --primary-orange: #ff7a00;
   --primary-orange-dark: #e66800;
   --neutral-muted: #6c757d;
+<<<<<<< HEAD
   --available-green: #d4f7d4;
   --unavailable-red: #ffd6d6;
+=======
+>>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
 }
 
 body {
   background-color: #ffffff;
   color: #222222;
+<<<<<<< HEAD
   font-family: 'Poppins', sans-serif;
 }
 
 header h1 {
   color: var(--primary-orange);
+=======
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.bg-primary-orange {
+  background-color: var(--primary-orange) !important;
+>>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
 }
 
 .btn-primary-action {
@@ -30,6 +41,7 @@ header h1 {
 .card {
   border-radius: 0.5rem;
 }
+<<<<<<< HEAD
 
 .slot-available {
   background-color: var(--available-green);
@@ -38,3 +50,5 @@ header h1 {
 .slot-unavailable {
   background-color: var(--unavailable-red);
 }
+=======
+>>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf

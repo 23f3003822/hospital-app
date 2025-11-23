@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+<<<<<<< HEAD
 {% block page_title %}Doctor Availability{% endblock %}
 {% block main_content %}
 <div class="d-flex justify-content-between mb-3">
@@ -18,4 +19,26 @@
   <li class="list-group-item">No availability set</li>
   {% endif %}
 </ul>
+=======
+{% block page_title %}Doctor - Availability{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Set Availability</h2>
+  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_show_doctor_dashboard') }}">Back</a>
+</div>
+
+<form>
+  <div class="mb-3">
+    <label class="form-label">Select date</label>
+    <input type="date" class="form-control" name="availability_date">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Select time</label>
+    <input type="time" class="form-control" name="availability_time">
+  </div>
+  <div class="d-grid">
+    <button class="btn btn-primary-action" type="button">Save Availability</button>
+  </div>
+</form>
+>>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
 {% endblock %}
