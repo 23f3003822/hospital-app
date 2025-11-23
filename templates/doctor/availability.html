@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block page_title %}Doctor Availability{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Set Availability (both slots added automatically)</h2>
+  <a class="btn btn-outline-primary" href="{{ url_for('route_show_doctor_dashboard') }}">Back</a>
+</div>
+<form method="post" class="mb-3">
+  <div class="mb-3"><label class="form-label">Choose date</label><input name="availability_date" type="date" class="form-control" required></div>
+  <div class="d-grid"><button class="btn btn-primary-action" type="submit">Save Date (adds both slots)</button></div>
+</form>
+<h5>Existing availability</h5>
+<ul class="list-group">
+  {% for a in avail %}
+  <li class="list-group-item">{{ a.available_date }} - {{ a.available_time }}</li>
+  {% endfor %}
+  {% if avail|length == 0 %}
+  <li class="list-group-item">No availability set</li>
+  {% endif %}
+</ul>
+{% endblock %}

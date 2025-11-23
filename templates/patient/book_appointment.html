@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block page_title %}Book Appointment{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Book Appointment - {{ doctor.name }}</h2>
+  <a class="btn btn-outline-primary" href="{{ url_for('route_show_patient_doctors_list') }}">Back</a>
+</div>
+{% if booked is not none %}
+  {% if booked == False %}
+  <div class="alert alert-danger">Slot already booked</div>
+  {% else %}
+  <div class="alert alert-success">Appointment booked. Appointment ID: {{ booked }}</div>
+  {% endif %}
+{% endif %}
+<table class="table">
+  <thead><tr><th>Date</th><th>Morning (10:00-14:00)</th><th>Evening (16:00-20:00)</th></tr></thead>
+  <tbody>
+    {% for d in next7 %}
+    <tr>
+      <td>{{ d }}</td>
+      <td class="{% if availability_map[d]['10:00-14:00'] %}slot-available{% else %}slot-unavailable{% endif %}">
+        {% if availability_map[d]['10:00-14:00'] %}
+        <form method="post">
+          <input type="hidden" name="date_choice" value="{{ d }}">
+          <input type="hidden" name="slot_choice" value="10:00-14:00">
+          <button class="btn btn-sm btn-primary-action" type="submit">Book</button>
+        </form>
+        {% else %}Not available{% endif %}
+      </td>
+      <td class="{% if availability_map[d]['16:00-20:00'] %}slot-available{% else %}slot-unavailable{% endif %}">
+        {% if availability_map[d]['16:00-20:00'] %}
+        <form method="post">
+          <input type="hidden" name="date_choice" value="{{ d }}">
+          <input type="hidden" name="slot_choice" value="16:00-20:00">
+          <button class="btn btn-sm btn-primary-action" type="submit">Book</button>
+        </form>
+        {% else %}Not available{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

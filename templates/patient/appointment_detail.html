@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block page_title %}Appointment Detail{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Appointment Detail</h2>
+  <a class="btn btn-outline-primary" href="{{ url_for('route_show_patient_appointments_list') }}">Back</a>
+</div>
+<div class="card p-3 mb-3">
+  <p><strong>Appointment ID:</strong> {{ appointment.id }}</p>
+  <p><strong>Doctor:</strong> {{ appointment.doctor_name }}</p>
+  <p><strong>Date:</strong> {{ appointment.appointment_date }} <strong>Time:</strong> {{ appointment.appointment_time }}</p>
+  <p><strong>Status:</strong> {{ appointment.status }}</p>
+</div>
+<form method="post">
+  <div class="d-grid"><button class="btn btn-outline-secondary" name="action" value="Cancel" type="submit">Cancel Appointment</button></div>
+</form>
+<hr>
+<h5>Results</h5>
+<ul class="list-group">
+  {% for t in treatments %}
+  <li class="list-group-item">
+    <strong>Diagnosis:</strong> {{ t.diagnosis }} <br>
+    <strong>Prescription:</strong> {{ t.prescription }} <br>
+    <strong>Notes:</strong> {{ t.doctor_notes }}
+  </li>
+  {% endfor %}
+  {% if treatments|length == 0 %}
+  <li class="list-group-item">No results</li>
+  {% endif %}
+</ul>
+{% endblock %}

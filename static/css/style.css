@@ -1,0 +1,40 @@
+:root{
+  --primary-orange: #ff7a00;
+  --primary-orange-dark: #e66800;
+  --neutral-muted: #6c757d;
+  --available-green: #d4f7d4;
+  --unavailable-red: #ffd6d6;
+}
+
+body {
+  background-color: #ffffff;
+  color: #222222;
+  font-family: 'Poppins', sans-serif;
+}
+
+header h1 {
+  color: var(--primary-orange);
+}
+
+.btn-primary-action {
+  background-color: var(--primary-orange);
+  color: #ffffff;
+  border: none;
+}
+
+.btn-primary-action:hover {
+  background-color: var(--primary-orange-dark);
+  color: #ffffff;
+}
+
+.card {
+  border-radius: 0.5rem;
+}
+
+.slot-available {
+  background-color: var(--available-green);
+}
+
+.slot-unavailable {
+  background-color: var(--unavailable-red);
+}

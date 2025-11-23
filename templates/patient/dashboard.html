@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block page_title %}Patient Dashboard{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Patient Dashboard</h2>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card p-3">
+      <h5>Find Doctors by Specialization</h5>
+      <p>Search and view doctor profiles</p>
+      <a class="btn btn-primary-action" href="{{ url_for('route_show_patient_doctors_list') }}">Search Doctors</a>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3">
+      <h5>Your Appointments</h5>
+      <p>Upcoming and completed</p>
+      <a class="btn btn-primary-action" href="{{ url_for('route_show_patient_appointments_list') }}">View Appointments</a>
+    </div>
+  </div>
+</div>
+<h5>Departments</h5>
+<ul class="list-group">
+  {% for dep in departments %}
+  <li class="list-group-item">{{ dep.name }}</li>
+  {% endfor %}
+  {% if departments|length == 0 %}
+  <li class="list-group-item">No departments</li>
+  {% endif %}
+</ul>
+<hr>
+<h5>Completed Results</h5>
+<ul class="list-group">
+  {% for c in completed %}
+  <li class="list-group-item">
+    Appointment {{ c.id }} - {{ c.appointment_date }} <br>
+    Diagnosis: {{ c.diagnosis or '-' }} Prescription: {{ c.prescription or '-' }}
+    <a class="btn btn-sm btn-outline-secondary float-end" href="{{ url_for('route_show_patient_appointment_detail', appointment_id=c.id) }}">Check Result</a>
+  </li>
+  {% endfor %}
+  {% if completed|length == 0 %}
+  <li class="list-group-item">No completed appointments</li>
+  {% endif %}
+</ul>
+{% endblock %}

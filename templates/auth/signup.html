@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block page_title %}Signup - Hospital{% endblock %}
+{% block main_content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title text-center mb-3">Signup</h3>
+        {% if error_message %}
+        <div class="alert alert-danger" role="alert">{{ error_message }}</div>
+        {% endif %}
+        <form method="post" action="{{ url_for('route_show_signup') }}">
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input name="full_name" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email Address</label>
+            <input name="email_address" type="email" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Create Password</label>
+            <input name="create_password" type="password" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select name="role" class="form-select" required>
+              <option value="patient">Patient</option>
+              <option value="doctor">Doctor</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Specialization (doctors only)</label>
+            <select name="specialization" class="form-select">
+              <option value="">Select specialization (doctors only)</option>
+              {% for dept in departments %}
+              <option value="{{ dept.id }}">{{ dept.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary-action" type="submit">Signup</button>
+            <a class="btn btn-outline-secondary" href="{{ url_for('route_show_signin') }}">Back to signin</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

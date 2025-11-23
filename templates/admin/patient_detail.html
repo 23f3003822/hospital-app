@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block page_title %}Admin - Patient Detail{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Patient Detail</h2>
+  <a class="btn btn-outline-primary" href="{{ url_for('route_show_admin_patients_list') }}">Back</a>
+</div>
+<form method="post">
+  <div class="mb-3"><label class="form-label">Name</label><input name="name" class="form-control" value="{{ patient.name }}"></div>
+  <div class="mb-3"><label class="form-label">Email</label><input name="email" class="form-control" value="{{ patient.email }}"></div>
+  <div class="mb-3 form-check"><input type="checkbox" name="remove" value="1" class="form-check-input" id="removePat"><label class="form-check-label" for="removePat">Remove patient</label></div>
+  <div class="d-grid"><button class="btn btn-primary-action" type="submit">Save</button></div>
+</form>
+<hr>
+<h4>Treatment History</h4>
+<ul class="list-group">
+  {% for t in treatments %}
+  <li class="list-group-item">
+    <strong>Appointment:</strong> {{ t.appointment_date }} {{ t.appointment_time }} <br>
+    <strong>Diagnosis:</strong> {{ t.diagnosis }} <br>
+    <strong>Prescription:</strong> {{ t.prescription }}
+  </li>
+  {% endfor %}
+  {% if treatments|length == 0 %}
+  <li class="list-group-item">No treatment records</li>
+  {% endif %}
+</ul>
+{% endblock %}

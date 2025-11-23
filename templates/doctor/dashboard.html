@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block page_title %}Doctor Dashboard{% endblock %}
+{% block main_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Doctor Dashboard</h2>
+</div>
+<h5>Upcoming Appointments</h5>
+<ul class="list-group mb-3">
+  {% for ap in upcoming %}
+  <li class="list-group-item">
+    {{ ap.appointment_date }} {{ ap.appointment_time }} - {{ ap.patient_name }} ({{ ap.patient_id }}) - {{ ap.status }}
+    <a class="btn btn-sm btn-outline-secondary float-end" href="{{ url_for('route_show_doctor_appointment_detail', appointment_id=ap.id) }}">Detail</a>
+  </li>
+  {% endfor %}
+  {% if upcoming|length == 0 %}
+  <li class="list-group-item">No upcoming appointments</li>
+  {% endif %}
+</ul>
+<div class="d-flex gap-2">
+  <a class="btn btn-primary-action" href="{{ url_for('route_show_doctor_availability') }}">Set Availability</a>
+  <a class="btn btn-outline-secondary" href="{{ url_for('route_show_doctor_appointments_list') }}">View All</a>
+</div>
+{% endblock %}
