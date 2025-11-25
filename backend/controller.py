@@ -1,6 +1,5 @@
 from flask import render_template, redirect, url_for, request, session
 from .models import db, Admin, Department, Doctor, Patient, DoctorAvailability, Appointment, Treatment, ADMIN_EMAIL, ADMIN_PASSWORD
-import os
 from datetime import datetime, timedelta
 from sqlalchemy.exc import IntegrityError
 
