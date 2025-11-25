@@ -9,11 +9,7 @@
         {% if error_message %}
         <div class="alert alert-danger" role="alert">{{ error_message }}</div>
         {% endif %}
-<<<<<<< HEAD
         <form method="post" action="{{ url_for('route_show_signin') }}">
-=======
-        <form method="post" action="{{ url_for('main_blueprint.route_handle_signin') }}">
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
           <div class="mb-3">
             <label class="form-label">Email or Username</label>
             <input type="text" class="form-control" name="email_or_username" required>
@@ -32,11 +28,7 @@
           </div>
           <div class="d-grid gap-2">
             <button class="btn btn-primary-action" type="submit">Signin</button>
-<<<<<<< HEAD
             <a class="btn btn-outline-secondary" href="{{ url_for('route_show_signup') }}">Signup</a>
-=======
-            <a class="btn btn-outline-secondary" href="{{ url_for('main_blueprint.route_handle_signup') }}">Signup</a>
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
           </div>
         </form>
       </div>

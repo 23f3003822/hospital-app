@@ -9,11 +9,7 @@
         {% if error_message %}
         <div class="alert alert-danger" role="alert">{{ error_message }}</div>
         {% endif %}
-<<<<<<< HEAD
         <form method="post" action="{{ url_for('route_show_signup') }}">
-=======
-        <form method="post" action="{{ url_for('main_blueprint.route_handle_signup') }}">
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
           <div class="mb-3">
             <label class="form-label">Full Name</label>
             <input name="full_name" class="form-control" required>
@@ -33,13 +29,8 @@
               <option value="doctor">Doctor</option>
             </select>
           </div>
-<<<<<<< HEAD
           <div class="mb-3">
             <label class="form-label">Specialization (doctors only)</label>
-=======
-          <div class="mb-3" id="specialization-block">
-            <label class="form-label">Specialization (only for doctors)</label>
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
             <select name="specialization" class="form-select">
               <option value="">Select specialization (doctors only)</option>
               {% for dept in departments %}
@@ -49,15 +40,36 @@
           </div>
           <div class="d-grid gap-2">
             <button class="btn btn-primary-action" type="submit">Signup</button>
-<<<<<<< HEAD
             <a class="btn btn-outline-secondary" href="{{ url_for('route_show_signin') }}">Back to signin</a>
-=======
-            <a class="btn btn-outline-secondary" href="{{ url_for('main_blueprint.route_handle_signin') }}">Back to signin</a>
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
           </div>
         </form>
       </div>
     </div>
   </div>
 </div>
+<script>
+  (function() {
+    function toggleSpecialization() {
+      const roleSelect = document.querySelector('select[name="role"]');
+      const specGroup = document.querySelector('.mb-3 select[name="specialization"]').closest('.mb-3');
+      const specSelect = document.querySelector('select[name="specialization"]');
+      if (!roleSelect || !specGroup || !specSelect) return;
+      if (roleSelect.value === 'patient') {
+        specGroup.style.display = 'none';
+        specSelect.disabled = true;
+      } else {
+        specGroup.style.display = '';
+        specSelect.disabled = false;
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      const roleSelect = document.querySelector('select[name="role"]');
+      if (!roleSelect) return;
+      // run once on load
+      toggleSpecialization();
+      // update on change
+      roleSelect.addEventListener('change', toggleSpecialization);
+    });
+  })();
+</script>
 {% endblock %}

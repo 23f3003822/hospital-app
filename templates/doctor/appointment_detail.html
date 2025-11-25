@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-<<<<<<< HEAD
 {% block page_title %}Appointment Detail{% endblock %}
 {% block main_content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -9,8 +8,9 @@
 <div class="card p-3 mb-3">
   <p><strong>Patient:</strong> {{ appointment.patient_name }} ({{ appointment.patient_id }})</p>
   <p><strong>Date:</strong> {{ appointment.appointment_date }} <strong>Time:</strong> {{ appointment.appointment_time }}</p>
-  <p><strong>Status:</strong> {{ appointment.status }}</p>
+  <p><strong>Status:</strong> <span class="status-{{ appointment.status|lower }}">{{ appointment.status }}</span></p>
 </div>
+{% if appointment and appointment.status == 'Booked' %}
 <form method="post">
   <div class="mb-3">
     <label class="form-label">Action</label>
@@ -25,6 +25,9 @@
   <div class="mb-3"><label class="form-label">Notes</label><textarea name="doctor_notes" class="form-control"></textarea></div>
   <div class="d-grid"><button class="btn btn-primary-action" type="submit">Save Result / Status</button></div>
 </form>
+{% else %}
+<div class="alert alert-secondary">No modifications allowed — this appointment is <strong>{{ appointment.status if appointment else 'Unknown' }}</strong>.</div>
+{% endif %}
 <hr>
 <h5>Previous Results</h5>
 <ul class="list-group">
@@ -39,22 +42,4 @@
   <li class="list-group-item">No results</li>
   {% endif %}
 </ul>
-=======
-{% block page_title %}Doctor - Appointment Detail{% endblock %}
-{% block main_content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Appointment Detail</h2>
-  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_show_doctor_appointments_list') }}">Back</a>
-</div>
-
-<div class="card p-3">
-  <p>Patient: -</p>
-  <p>Date: -</p>
-  <p>Time: -</p>
-  <div class="d-flex gap-2">
-    <button class="btn btn-primary-action" type="button">Mark Completed</button>
-    <button class="btn btn-outline-secondary" type="button">Cancel</button>
-  </div>
-</div>
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
 {% endblock %}

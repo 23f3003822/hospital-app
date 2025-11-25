@@ -3,30 +3,18 @@
 {% block main_content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Patient Dashboard</h2>
-<<<<<<< HEAD
 </div>
 <div class="row g-3 mb-3">
-=======
-  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_handle_signout') }}">Signout</a>
-</div>
-
-<div class="row g-3">
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
   <div class="col-md-6">
     <div class="card p-3">
       <h5>Find Doctors by Specialization</h5>
       <p>Search and view doctor profiles</p>
-<<<<<<< HEAD
       <a class="btn btn-primary-action" href="{{ url_for('route_show_patient_doctors_list') }}">Search Doctors</a>
-=======
-      <a class="btn btn-primary-action" href="{{ url_for('main_blueprint.route_show_patient_doctors_list') }}">Search Doctors</a>
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
     </div>
   </div>
   <div class="col-md-6">
     <div class="card p-3">
       <h5>Your Appointments</h5>
-<<<<<<< HEAD
       <p>Upcoming and completed</p>
       <a class="btn btn-primary-action" href="{{ url_for('route_show_patient_appointments_list') }}">View Appointments</a>
     </div>
@@ -55,11 +43,4 @@
   <li class="list-group-item">No completed appointments</li>
   {% endif %}
 </ul>
-=======
-      <p>No upcoming appointments</p>
-      <a class="btn btn-primary-action" href="{{ url_for('main_blueprint.route_show_patient_appointments_list') }}">View Appointments</a>
-    </div>
-  </div>
-</div>
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
 {% endblock %}

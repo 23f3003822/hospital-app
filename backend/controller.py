@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from flask import render_template, redirect, url_for, request, session
 from .models import db, Admin, Department, Doctor, Patient, DoctorAvailability, Appointment, Treatment, ADMIN_EMAIL, ADMIN_PASSWORD
 import os
@@ -252,15 +251,36 @@ def register_routes(app):
     @app.route('/doctor/appointments')
     def route_show_doctor_appointments_list():
         doctor_id = session.get('doctor_id')
-        appointments = []
+        pending = []
+        history = []
         if doctor_id:
-            appointments = db.session.query(Appointment.id, Patient.id.label('patient_id'), Patient.name.label('patient_name'), Appointment.appointment_date, Appointment.appointment_time, Appointment.status).outerjoin(Patient, Appointment.patient_id == Patient.id).filter(Appointment.doctor_id == doctor_id).order_by(Appointment.appointment_date, Appointment.appointment_time).all()
-        return render_template('doctor/appointments_list.html', appointments=appointments)
+            rows_pending = db.session.query(Appointment.id, Patient.id.label('patient_id'), Patient.name.label('patient_name'), Appointment.appointment_date, Appointment.appointment_time, Appointment.status).outerjoin(Patient, Appointment.patient_id == Patient.id).filter(Appointment.doctor_id == doctor_id, Appointment.status == 'Booked').order_by(Appointment.appointment_date, Appointment.appointment_time).all()
+            rows_history = db.session.query(Appointment.id, Patient.id.label('patient_id'), Patient.name.label('patient_name'), Appointment.appointment_date, Appointment.appointment_time, Appointment.status).outerjoin(Patient, Appointment.patient_id == Patient.id).filter(Appointment.doctor_id == doctor_id, Appointment.status != 'Booked').order_by(Appointment.appointment_date.desc(), Appointment.appointment_time.desc()).all()
+            for r in rows_pending:
+                pending.append({
+                    'id': getattr(r, 'id', None) or r[0],
+                    'patient_id': getattr(r, 'patient_id', None) or r[1],
+                    'patient_name': getattr(r, 'patient_name', None) or r[2],
+                    'appointment_date': getattr(r, 'appointment_date', None) or r[3],
+                    'appointment_time': getattr(r, 'appointment_time', None) or r[4],
+                    'status': getattr(r, 'status', None) or r[5],
+                })
+            for r in rows_history:
+                history.append({
+                    'id': getattr(r, 'id', None) or r[0],
+                    'patient_id': getattr(r, 'patient_id', None) or r[1],
+                    'patient_name': getattr(r, 'patient_name', None) or r[2],
+                    'appointment_date': getattr(r, 'appointment_date', None) or r[3],
+                    'appointment_time': getattr(r, 'appointment_time', None) or r[4],
+                    'status': getattr(r, 'status', None) or r[5],
+                })
+        return render_template('doctor/appointments_list.html', pending=pending, history=history)
 
     @app.route('/doctor/appointment/<int:appointment_id>', methods=['GET', 'POST'])
     def route_show_doctor_appointment_detail(appointment_id):
         doctor_id = session.get('doctor_id')
         appointment = db.session.query(Appointment, Patient.id.label('patient_id'), Patient.name.label('patient_name')).outerjoin(Patient, Appointment.patient_id == Patient.id).filter(Appointment.id == appointment_id).first()
+        modified = False
         if request.method == 'POST':
             statusrow = Appointment.query.get(appointment_id)
             if statusrow and statusrow.status == 'Booked':
@@ -268,16 +288,39 @@ def register_routes(app):
                 if action in ('Completed', 'Cancelled'):
                     statusrow.status = action
                     db.session.commit()
-            diagnosis = request.form.get('diagnosis')
-            prescription = request.form.get('prescription')
-            notes = request.form.get('doctor_notes')
-            if diagnosis or prescription or notes:
-                tr = Treatment(appointment_id=appointment_id, diagnosis=diagnosis, prescription=prescription, doctor_notes=notes)
-                db.session.add(tr)
-                db.session.commit()
+                    modified = True
+                diagnosis = request.form.get('diagnosis')
+                prescription = request.form.get('prescription')
+                notes = request.form.get('doctor_notes')
+                if diagnosis or prescription or notes:
+                    tr = Treatment(appointment_id=appointment_id, diagnosis=diagnosis, prescription=prescription, doctor_notes=notes)
+                    db.session.add(tr)
+                    db.session.commit()
+                    modified = True
             appointment = db.session.query(Appointment, Patient.id.label('patient_id'), Patient.name.label('patient_name')).outerjoin(Patient, Appointment.patient_id == Patient.id).filter(Appointment.id == appointment_id).first()
+            if modified:
+                return redirect(url_for('route_show_doctor_appointments_list'))
+
+        appt_obj = None
+        if appointment:
+            try:
+                appt_raw = appointment[0]
+                patient_id = getattr(appointment, 'patient_id', None) or appointment[1]
+                patient_name = getattr(appointment, 'patient_name', None) or appointment[2]
+            except Exception:
+                appt_raw = appointment
+                patient_id = appt_raw.patient_id
+                patient_name = None
+            appt_obj = {
+                'id': appt_raw.id,
+                'appointment_date': appt_raw.appointment_date,
+                'appointment_time': appt_raw.appointment_time,
+                'status': appt_raw.status,
+                'patient_id': patient_id,
+                'patient_name': patient_name,
+            }
         treatments = Treatment.query.filter_by(appointment_id=appointment_id).order_by(Treatment.created_at.desc()).all()
-        return render_template('doctor/appointment_detail.html', appointment=appointment, treatments=treatments)
+        return render_template('doctor/appointment_detail.html', appointment=appt_obj, treatments=treatments)
 
     @app.route('/patient/dashboard')
     def route_show_patient_dashboard():
@@ -287,7 +330,23 @@ def register_routes(app):
         completed = []
         if patient_id:
             upcoming = Appointment.query.filter_by(patient_id=patient_id, status='Booked').order_by(Appointment.appointment_date, Appointment.appointment_time).all()
-            completed = db.session.query(Appointment, Treatment.diagnosis, Treatment.prescription).outerjoin(Treatment, Appointment.id == Treatment.appointment_id).filter(Appointment.patient_id == patient_id, Appointment.status == 'Completed').order_by(Appointment.appointment_date.desc()).all()
+            raw_completed = db.session.query(Appointment, Treatment.diagnosis, Treatment.prescription).outerjoin(Treatment, Appointment.id == Treatment.appointment_id).filter(Appointment.patient_id == patient_id, Appointment.status == 'Completed').order_by(Appointment.appointment_date.desc()).all()
+            completed = []
+            for row in raw_completed:
+                try:
+                    appt = row[0]
+                    diag = row[1]
+                    presc = row[2]
+                except Exception:
+                    appt = row
+                    diag = None
+                    presc = None
+                completed.append({
+                    'id': appt.id,
+                    'appointment_date': appt.appointment_date,
+                    'diagnosis': diag,
+                    'prescription': presc,
+                })
         return render_template('patient/dashboard.html', departments=departments, upcoming=upcoming, completed=completed)
 
     @app.route('/patient/doctors')
@@ -328,24 +387,46 @@ def register_routes(app):
             try:
                 db.session.add(appt)
                 db.session.commit()
-                booked = appt.id
+                return redirect(url_for('route_show_patient_appointment_detail', appointment_id=appt.id))
             except IntegrityError:
                 db.session.rollback()
                 booked = False
+                return render_template('patient/book_appointment.html', doctor=doctor, next7=next7, availability_map=availability_map, booked=booked)
         return render_template('patient/book_appointment.html', doctor=doctor, next7=next7, availability_map=availability_map, booked=booked)
 
     @app.route('/patient/appointments')
     def route_show_patient_appointments_list():
         patient_id = session.get('patient_id')
-        appointments = []
+        pending = []
+        history = []
         if patient_id:
-            appointments = db.session.query(Appointment.id, Doctor.id.label('doctor_id'), Doctor.name.label('doctor_name'), Appointment.appointment_date, Appointment.appointment_time, Appointment.status).outerjoin(Doctor, Appointment.doctor_id == Doctor.id).filter(Appointment.patient_id == patient_id).order_by(Appointment.appointment_date, Appointment.appointment_time).all()
-        return render_template('patient/appointments_list.html', appointments=appointments)
+            rows_pending = db.session.query(Appointment.id, Doctor.id.label('doctor_id'), Doctor.name.label('doctor_name'), Appointment.appointment_date, Appointment.appointment_time, Appointment.status).outerjoin(Doctor, Appointment.doctor_id == Doctor.id).filter(Appointment.patient_id == patient_id, Appointment.status == 'Booked').order_by(Appointment.appointment_date, Appointment.appointment_time).all()
+            rows_history = db.session.query(Appointment.id, Doctor.id.label('doctor_id'), Doctor.name.label('doctor_name'), Appointment.appointment_date, Appointment.appointment_time, Appointment.status).outerjoin(Doctor, Appointment.doctor_id == Doctor.id).filter(Appointment.patient_id == patient_id, Appointment.status != 'Booked').order_by(Appointment.appointment_date.desc(), Appointment.appointment_time.desc()).all()
+            for r in rows_pending:
+                pending.append({
+                    'id': getattr(r, 'id', None) or r[0],
+                    'doctor_id': getattr(r, 'doctor_id', None) or r[1],
+                    'doctor_name': getattr(r, 'doctor_name', None) or r[2],
+                    'appointment_date': getattr(r, 'appointment_date', None) or r[3],
+                    'appointment_time': getattr(r, 'appointment_time', None) or r[4],
+                    'status': getattr(r, 'status', None) or r[5],
+                })
+            for r in rows_history:
+                history.append({
+                    'id': getattr(r, 'id', None) or r[0],
+                    'doctor_id': getattr(r, 'doctor_id', None) or r[1],
+                    'doctor_name': getattr(r, 'doctor_name', None) or r[2],
+                    'appointment_date': getattr(r, 'appointment_date', None) or r[3],
+                    'appointment_time': getattr(r, 'appointment_time', None) or r[4],
+                    'status': getattr(r, 'status', None) or r[5],
+                })
+        return render_template('patient/appointments_list.html', pending=pending, history=history)
 
     @app.route('/patient/appointment/<int:appointment_id>', methods=['GET', 'POST'])
     def route_show_patient_appointment_detail(appointment_id):
         patient_id = session.get('patient_id')
         appointment = db.session.query(Appointment, Doctor.name.label('doctor_name'), Patient.name.label('patient_name')).outerjoin(Doctor, Appointment.doctor_id == Doctor.id).outerjoin(Patient, Appointment.patient_id == Patient.id).filter(Appointment.id == appointment_id).first()
+        modified = False
         if request.method == 'POST':
             appt = Appointment.query.get(appointment_id)
             if appt and appt.status == 'Booked':
@@ -353,9 +434,32 @@ def register_routes(app):
                 if action == 'Cancel':
                     appt.status = 'Cancelled'
                     db.session.commit()
+                    modified = True
             appointment = db.session.query(Appointment, Doctor.name.label('doctor_name'), Patient.name.label('patient_name')).outerjoin(Doctor, Appointment.doctor_id == Doctor.id).outerjoin(Patient, Appointment.patient_id == Patient.id).filter(Appointment.id == appointment_id).first()
+            if modified:
+                return redirect(url_for('route_show_patient_appointments_list'))
+        appt_obj = None
+        if appointment:
+            try:
+                appt_raw = appointment[0]
+                doctor_name = getattr(appointment, 'doctor_name', None) or appointment[1]
+                patient_name = getattr(appointment, 'patient_name', None) or appointment[2]
+            except Exception:
+                appt_raw = appointment
+                doctor_name = None
+                patient_name = None
+            appt_obj = {
+                'id': appt_raw.id,
+                'appointment_date': appt_raw.appointment_date,
+                'appointment_time': appt_raw.appointment_time,
+                'status': appt_raw.status,
+                'doctor_id': appt_raw.doctor_id,
+                'doctor_name': doctor_name,
+                'patient_id': appt_raw.patient_id,
+                'patient_name': patient_name,
+            }
         treatments = Treatment.query.filter_by(appointment_id=appointment_id).order_by(Treatment.created_at.desc()).all()
-        return render_template('patient/appointment_detail.html', appointment=appointment, treatments=treatments)
+        return render_template('patient/appointment_detail.html', appointment=appt_obj, treatments=treatments)
 
     @app.route('/patient/profile', methods=['GET', 'POST'])
     def route_show_patient_profile():
@@ -374,171 +478,3 @@ def register_routes(app):
             session['name'] = new_name
             session['email'] = new_email
         return render_template('patient/profile.html', patient=patient)
-=======
-from flask import Blueprint, render_template, redirect, url_for, request, session
-
-main_blueprint = Blueprint('main_blueprint', __name__)
-
-HARD_CODED_ADMIN_EMAIL = "admin@example.com"
-HARD_CODED_ADMIN_PASSWORD = "admin123"
-
-in_memory_patient_accounts = {}
-in_memory_doctor_accounts = {}
-in_memory_departments = [
-    {"id": "dept1", "name": "Cardiology"},
-    {"id": "dept2", "name": "Dermatology"},
-    {"id": "dept3", "name": "Pediatrics"}
-]
-
-def generate_new_department_id():
-    base = "dept"
-    index = 1
-    existing_ids = {d["id"] for d in in_memory_departments}
-    while f"{base}{index}" in existing_ids:
-        index += 1
-    return f"{base}{index}"
-
-@main_blueprint.route('/')
-def route_show_homepage():
-    return redirect(url_for('main_blueprint.route_handle_signin'))
-
-@main_blueprint.route('/signin', methods=['GET', 'POST'])
-def route_handle_signin():
-    if request.method == 'POST':
-        email_input = request.form.get('email_or_username')
-        password_input = request.form.get('password_value')
-        selected_role = request.form.get('role')
-        if selected_role == 'admin':
-            if email_input == HARD_CODED_ADMIN_EMAIL and password_input == HARD_CODED_ADMIN_PASSWORD:
-                session.clear()
-                session['role'] = 'admin'
-                session['user_email'] = email_input
-                return redirect(url_for('main_blueprint.route_show_admin_dashboard'))
-            return render_template('auth/signin.html', error_message='Invalid admin credentials')
-        if selected_role == 'doctor':
-            account = in_memory_doctor_accounts.get(email_input)
-            if account and account.get('password') == password_input:
-                session.clear()
-                session['role'] = 'doctor'
-                session['user_email'] = email_input
-                session['user_name'] = account.get('name')
-                return redirect(url_for('main_blueprint.route_show_doctor_dashboard'))
-            return render_template('auth/signin.html', error_message='Invalid doctor credentials')
-        account = in_memory_patient_accounts.get(email_input)
-        if account and account.get('password') == password_input:
-            session.clear()
-            session['role'] = 'patient'
-            session['user_email'] = email_input
-            session['user_name'] = account.get('name')
-            return redirect(url_for('main_blueprint.route_show_patient_dashboard'))
-        return render_template('auth/signin.html', error_message='Invalid patient credentials')
-    return render_template('auth/signin.html')
-
-@main_blueprint.route('/signup', methods=['GET', 'POST'])
-def route_handle_signup():
-    if request.method == 'POST':
-        full_name = request.form.get('full_name')
-        email_address = request.form.get('email_address')
-        create_password = request.form.get('create_password')
-        desired_role = request.form.get('role')
-        selected_specialization = request.form.get('specialization')
-        if desired_role == 'doctor':
-            if email_address in in_memory_doctor_accounts:
-                return render_template('auth/signup.html', error_message='Doctor email already exists', departments=in_memory_departments)
-            in_memory_doctor_accounts[email_address] = {
-                'name': full_name,
-                'email': email_address,
-                'password': create_password,
-                'specialization_id': selected_specialization
-            }
-            return redirect(url_for('main_blueprint.route_handle_signin'))
-        if email_address in in_memory_patient_accounts:
-            return render_template('auth/signup.html', error_message='Patient email already exists', departments=in_memory_departments)
-        in_memory_patient_accounts[email_address] = {
-            'name': full_name,
-            'email': email_address,
-            'password': create_password
-        }
-        return redirect(url_for('main_blueprint.route_handle_signin'))
-    return render_template('auth/signup.html', departments=in_memory_departments)
-
-@main_blueprint.route('/signout')
-def route_handle_signout():
-    session.clear()
-    return redirect(url_for('main_blueprint.route_handle_signin'))
-
-@main_blueprint.route('/admin/dashboard')
-def route_show_admin_dashboard():
-    return render_template('admin/dashboard.html')
-
-@main_blueprint.route('/admin/departments', methods=['GET', 'POST'])
-def route_show_admin_departments():
-    if request.method == 'POST':
-        department_name = request.form.get('department_name')
-        if department_name:
-            new_id = generate_new_department_id()
-            in_memory_departments.append({"id": new_id, "name": department_name})
-    return render_template('admin/departments_list.html', departments=in_memory_departments)
-
-@main_blueprint.route('/admin/doctors')
-def route_show_admin_doctors_list():
-    doctors = []
-    for d in in_memory_doctor_accounts.values():
-        spec_name = next((dept["name"] for dept in in_memory_departments if dept["id"] == d.get("specialization_id")), "Not set")
-        doctors.append({"name": d.get("name"), "email": d.get("email"), "specialization": spec_name})
-    return render_template('admin/doctors_list.html', doctors=doctors)
-
-@main_blueprint.route('/admin/patients')
-def route_show_admin_patients_list():
-    patients = list(in_memory_patient_accounts.values())
-    return render_template('admin/patients_list.html', patients=patients)
-
-@main_blueprint.route('/admin/appointments')
-def route_show_admin_appointments_list():
-    return render_template('admin/appointments_list.html')
-
-@main_blueprint.route('/doctor/dashboard')
-def route_show_doctor_dashboard():
-    return render_template('doctor/dashboard.html')
-
-@main_blueprint.route('/doctor/availability')
-def route_show_doctor_availability():
-    return render_template('doctor/availability.html')
-
-@main_blueprint.route('/doctor/appointments')
-def route_show_doctor_appointments_list():
-    return render_template('doctor/appointments_list.html')
-
-@main_blueprint.route('/doctor/appointment/<appointment_id>')
-def route_show_doctor_appointment_detail(appointment_id):
-    return render_template('doctor/appointment_detail.html')
-
-@main_blueprint.route('/patient/dashboard')
-def route_show_patient_dashboard():
-    return render_template('patient/dashboard.html')
-
-@main_blueprint.route('/patient/doctors')
-def route_show_patient_doctors_list():
-    specialization_filter = request.args.get('specialization')
-    doctors = []
-    for d in in_memory_doctor_accounts.values():
-        spec = next((dept for dept in in_memory_departments if dept["id"] == d.get("specialization_id")), None)
-        spec_name = spec["name"] if spec else "Not set"
-        doctors.append({"email": d.get("email"), "name": d.get("name"), "specialization_id": d.get("specialization_id"), "specialization_name": spec_name})
-    if specialization_filter:
-        doctors = [doc for doc in doctors if doc.get("specialization_id") == specialization_filter]
-    return render_template('patient/doctors_list.html', doctors=doctors, departments=in_memory_departments)
-
-@main_blueprint.route('/patient/book/<doctor_id>')
-def route_show_patient_book_appointment(doctor_id):
-    doctor = in_memory_doctor_accounts.get(doctor_id)
-    return render_template('patient/book_appointment.html', doctor=doctor)
-
-@main_blueprint.route('/patient/appointments')
-def route_show_patient_appointments_list():
-    return render_template('patient/appointments_list.html')
-
-@main_blueprint.route('/patient/appointment/<appointment_id>')
-def route_show_patient_appointment_detail(appointment_id):
-    return render_template('patient/appointment_detail.html')
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf

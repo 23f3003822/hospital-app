@@ -3,13 +3,12 @@
 {% block main_content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Doctor Dashboard</h2>
-<<<<<<< HEAD
 </div>
 <h5>Upcoming Appointments</h5>
 <ul class="list-group mb-3">
   {% for ap in upcoming %}
   <li class="list-group-item">
-    {{ ap.appointment_date }} {{ ap.appointment_time }} - {{ ap.patient_name }} ({{ ap.patient_id }}) - {{ ap.status }}
+    {{ ap.appointment_date }} {{ ap.appointment_time }} - {{ ap.patient_name }} ({{ ap.patient_id }}) - <span class="status-{{ ap.status|lower }}">{{ ap.status }}</span>
     <a class="btn btn-sm btn-outline-secondary float-end" href="{{ url_for('route_show_doctor_appointment_detail', appointment_id=ap.id) }}">Detail</a>
   </li>
   {% endfor %}
@@ -20,25 +19,5 @@
 <div class="d-flex gap-2">
   <a class="btn btn-primary-action" href="{{ url_for('route_show_doctor_availability') }}">Set Availability</a>
   <a class="btn btn-outline-secondary" href="{{ url_for('route_show_doctor_appointments_list') }}">View All</a>
-=======
-  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_handle_signout') }}">Signout</a>
-</div>
-
-<div class="row g-3">
-  <div class="col-md-6">
-    <div class="card p-3">
-      <h5>Upcoming Appointments (Today)</h5>
-      <p>No appointments yet</p>
-      <a class="btn btn-primary-action" href="{{ url_for('main_blueprint.route_show_doctor_appointments_list') }}">View All</a>
-    </div>
-  </div>
-  <div class="col-md-6">
-    <div class="card p-3">
-      <h5>Availability (Next 7 days)</h5>
-      <p>No availability set</p>
-      <a class="btn btn-primary-action" href="{{ url_for('main_blueprint.route_show_doctor_availability') }}">Set Availability</a>
-    </div>
-  </div>
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
 </div>
 {% endblock %}

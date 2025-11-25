@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-<<<<<<< HEAD
 {% block page_title %}Appointment Detail{% endblock %}
 {% block main_content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -10,11 +9,15 @@
   <p><strong>Appointment ID:</strong> {{ appointment.id }}</p>
   <p><strong>Doctor:</strong> {{ appointment.doctor_name }}</p>
   <p><strong>Date:</strong> {{ appointment.appointment_date }} <strong>Time:</strong> {{ appointment.appointment_time }}</p>
-  <p><strong>Status:</strong> {{ appointment.status }}</p>
+  <p><strong>Status:</strong> <span class="status-{{ appointment.status|lower }}">{{ appointment.status }}</span></p>
 </div>
+{% if appointment and appointment.status == 'Booked' %}
 <form method="post">
   <div class="d-grid"><button class="btn btn-outline-secondary" name="action" value="Cancel" type="submit">Cancel Appointment</button></div>
 </form>
+{% else %}
+<div class="alert alert-secondary">No modifications allowed — this appointment is <strong>{{ appointment.status if appointment else 'Unknown' }}</strong>.</div>
+{% endif %}
 <hr>
 <h5>Results</h5>
 <ul class="list-group">
@@ -29,19 +32,4 @@
   <li class="list-group-item">No results</li>
   {% endif %}
 </ul>
-=======
-{% block page_title %}Patient - Appointment Detail{% endblock %}
-{% block main_content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Appointment Detail</h2>
-  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_show_patient_appointments_list') }}">Back</a>
-</div>
-
-<div class="card p-3">
-  <p>Doctor: -</p>
-  <p>Date: -</p>
-  <p>Time: -</p>
-  <p>Status: -</p>
-</div>
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
 {% endblock %}

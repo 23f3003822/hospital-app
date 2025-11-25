@@ -1,31 +1,33 @@
 {% extends "base.html" %}
-<<<<<<< HEAD
 {% block page_title %}My Appointments{% endblock %}
 {% block main_content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Your Appointments</h2>
   <a class="btn btn-outline-primary" href="{{ url_for('route_show_patient_dashboard') }}">Back</a>
 </div>
-<ul class="list-group">
-  {% for a in appointments %}
+<h5>Pending Appointments</h5>
+<ul class="list-group mb-3">
+  {% for a in pending %}
   <li class="list-group-item">
-    {{ a.appointment_date }} {{ a.appointment_time }} with {{ a.doctor_name }} ({{ a.doctor_id }}) - {{ a.status }}
+    {{ a.appointment_date }} {{ a.appointment_time }} with {{ a.doctor_name }} ({{ a.doctor_id }}) - <span class="status-{{ a.status|lower }}">{{ a.status }}</span>
     <a class="btn btn-sm btn-outline-secondary float-end" href="{{ url_for('route_show_patient_appointment_detail', appointment_id=a.id) }}">Detail</a>
   </li>
   {% endfor %}
-  {% if appointments|length == 0 %}
-  <li class="list-group-item">No appointments</li>
+  {% if pending|length == 0 %}
+  <li class="list-group-item">No pending appointments</li>
   {% endif %}
-=======
-{% block page_title %}Patient - Appointments{% endblock %}
-{% block main_content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Your Appointments</h2>
-  <a class="btn btn-outline-primary" href="{{ url_for('main_blueprint.route_show_patient_dashboard') }}">Back</a>
-</div>
+</ul>
 
+<h5>Appointment History</h5>
 <ul class="list-group">
-  <li class="list-group-item">No upcoming appointments</li>
->>>>>>> 5e96f4170d4dd4c8dd2b47ffc11a27c45b5d9cbf
+  {% for a in history %}
+  <li class="list-group-item">
+    {{ a.appointment_date }} {{ a.appointment_time }} with {{ a.doctor_name }} ({{ a.doctor_id }}) - <span class="status-{{ a.status|lower }}">{{ a.status }}</span>
+    <a class="btn btn-sm btn-outline-secondary float-end" href="{{ url_for('route_show_patient_appointment_detail', appointment_id=a.id) }}">Detail</a>
+  </li>
+  {% endfor %}
+  {% if history|length == 0 %}
+  <li class="list-group-item">No history</li>
+  {% endif %}
 </ul>
 {% endblock %}
